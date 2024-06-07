@@ -1,22 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_income_app/global_keys.dart';
+import 'package:flutter_income_app/models/income.dart';
 import 'package:flutter_income_app/models/user.dart';
 import 'package:flutter_income_app/repos/income.dart';
 import 'package:flutter_income_app/repos/index.dart';
 import 'package:flutter_income_app/repos/user.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sqflite/sqlite_api.dart';
 
 class DatabaseProvider extends ChangeNotifier {
-  // Database? database;
-  StorableData<UserModel>? userRepo, incomeRepo;
+  StorableData<UserModel>? userRepo;
+  StorableData<IncomeModel>? incomeRepo;
+  List<IncomeModel> incomeList = [];
 
   DatabaseProvider() {
-    _init();
+    init();
   }
 
-  Future<void> _init() async {
+  Future<void> fetchIncome() async {
+    await DatabaseProvider.instance.init();
+    incomeList = IncomeModel.fromList(await incomeRepo?.getAll() ?? []);
+    notifyListeners();
+  }
+
+  Future<void> init() async {
     final database =
         await openDatabase("income.db", version: 1, onCreate: _onCreate);
     userRepo ??= UserRepo(db: database);

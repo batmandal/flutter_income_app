@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
   }
 
   Widget content() {
-    return Center(
+    return const Center(
       child: Text("hi"),
     );
   }

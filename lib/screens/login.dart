@@ -11,11 +11,29 @@ class LoginScreen extends StatelessWidget {
     final repo = DatabaseProvider.instance.userRepo;
     List<UserModel> users = UserModel.fromList(await repo?.getAll() ?? []);
     print(users);
-    return "invalid password";
+
+    if (users.any((e) => e.email == data.name && e.password == data.password)) {
+      return null;
+    }
+    return "invalid password or email";
   }
 
   Future<String?> _onSignUp(SignupData data) async {
-    return "user already use";
+    await DatabaseProvider.instance.init();
+    final repo = DatabaseProvider.instance.userRepo;
+    if (repo == null) {
+      return "database tai holbogoj chadsangui";
+    }
+    List<UserModel> users = UserModel.fromList(await repo.getAll());
+    print(users);
+
+    if (users.any((e) => e.email == data.name)) {
+      return "hereglegch burtgeltei bn";
+    }
+    await repo.addOne(UserModel(
+        id: -1, email: data.name ?? '', password: data.password ?? ''));
+
+    return null;
   }
 
   Future<String?> _onRecover(String data) async {

@@ -13,7 +13,7 @@ abstract class StorableData<T> {
 
   Future<int> addOne(StorableModel element) async {
     int result = await db.rawInsert(insertOneQuery, element.queryList);
-    print("raw insert table : $tableName, $result");
+    print("Raw insert table: $tableName, result: $result");
     return result;
   }
 
@@ -22,8 +22,8 @@ abstract class StorableData<T> {
   }
 
   String get deleteQuery => "DELETE FROM $tableName WHERE id = ?";
-  String get selectAllQuery => "SELECT * FROM $tableName ";
-  String get selectOneQuery => "DELETE FROM $tableName WHERE id = ?";
+  String get selectAllQuery => "SELECT * FROM $tableName";
+  String get selectOneQuery => "SELECT * FROM $tableName WHERE id = ?";
 
   String get strCreateTable;
   String get insertOneQuery;

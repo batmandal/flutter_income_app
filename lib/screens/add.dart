@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_income_app/models/income.dart';
+import 'package:flutter_income_app/provider/index.dart';
 
 class AddIncomePage extends StatefulWidget {
   const AddIncomePage({super.key});
@@ -10,39 +12,79 @@ class AddIncomePage extends StatefulWidget {
 
 class _AddIncomePageState extends State<AddIncomePage> {
   final _formKey = GlobalKey<FormBuilderState>();
+  final _amountCtrl = TextEditingController(text: "0");
+  final _descCtrl = TextEditingController(text: "Цалин");
+  bool _isIncome = true;
+
+  void _onSubmit() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      final data = IncomeModel(
+        id: -1,
+        amount: _amountCtrl.text,
+        description: _descCtrl.text,
+        isIncome: _isIncome,
+      );
+      await DatabaseProvider.instance.init();
+      final repo = DatabaseProvider.instance.incomeRepo;
+      if (repo == null) return;
+      await repo.addOne(data);
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("ADD")),
+      appBar: AppBar(title: Text("Нэмэх")),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         child: FormBuilder(
+          key: _formKey,
           child: Column(
             children: [
               FormBuilderCheckbox(
-                name: "type",
-                title: Text("income or expenditure"),
+                onChanged: (value) {
+                  setState(() {
+                    _isIncome = value ?? !_isIncome;
+                  });
+                },
+                selected: _isIncome,
+                name: "isIncome",
+                title: Text("Орлого эсэх"),
                 initialValue: true,
               ),
               FormBuilderTextField(
+                controller: _amountCtrl,
                 name: "amount",
-                decoration: InputDecoration(labelText: "uniin dun"),
+                decoration: InputDecoration(
+                  labelText: "Үнийн дүн",
+                ),
               ),
               FormBuilderTextField(
+                controller: _descCtrl,
                 name: "description",
-                decoration: InputDecoration(labelText: "tailbar"),
-              )
+                decoration: InputDecoration(
+                  labelText: "Тайлбар",
+                ),
+              ),
             ],
           ),
-          key: _formKey,
         ),
       ),
       persistentFooterButtons: [
         Row(
           children: [
-            ElevatedButton(onPressed: () {}, child: const Text("Add"))
+            Expanded(
+              child: SizedBox(
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: _onSubmit,
+                  child: Text("Нэмэх"),
+                ),
+              ),
+            ),
           ],
-        )
+        ),
       ],
     );
   }

@@ -8,9 +8,9 @@ class UserModel extends StorableModel {
   static List<UserModel> fromList(List<dynamic> data) =>
       data.map((e) => UserModel.fromJson(e)).toList();
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
-        id: json["id"],
-        email: json["email"],
-        password: json["password"],
+        id: json['id'],
+        email: json['email'],
+        password: json['password'],
       );
 
   @override
